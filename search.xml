@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search> 
+  
+  
+    
+    <entry>
+      <title>Go语言学习笔记1-基本语法</title>
+      <link href="/2021/11/09/Go%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01-%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95/"/>
+      <url>/2021/11/09/Go%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01-%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95/</url>
+      
+        <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><blockquote><p>变量</p></blockquote><ul><li>多重赋值</li></ul><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a <span class="keyword">int</span> = <span class="number">100</span>  </span><br><span class="line"><span class="keyword">var</span> b <span class="keyword">int</span> = <span class="number">200</span>  </span><br><span class="line">b, a = a, b  </span><br></pre></td></tr></table></figure><blockquote><p>字符串</p></blockquote><ul><li>截取字符串<br>strings.Index(): 正向搜索子字符串<br>strings.LastIndex(): 反向搜索子字符串</li></ul><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">tracer := <span class="string">&quot;这是什么？这是一段字符串&quot;</span></span><br><span class="line">comma := strings.Index(tracers, <span class="string">&quot;？&quot;</span>)</span><br><span class="line">pos := strings.Index(tracer[comma], <span class="string">&quot;这是&quot;</span>)</span><br><span class="line">str := tracer[comma+pos:]</span><br></pre></td></tr></table></figure><ul><li>连接字符串<br>bytes.Buffer 缓冲字符串</li></ul><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">str1 := <span class="string">&quot;好好学习&quot;</span></span><br><span class="line">str2 := <span class="string">&quot;天天向上&quot;</span></span><br><span class="line"><span class="keyword">var</span> stringBuilder bytes.Buffer</span><br><span class="line">  </span><br><span class="line">stringBuilder.WriteString(str1)</span><br><span class="line">stringBuilder.WriteString(str2)</span><br><span class="line">result := stringBuilder.String()</span><br></pre></td></tr></table></figure><ul><li>格式化字符串</li></ul><table><thead><tr><th>动词</th><th>功能</th></tr></thead><tbody><tr><td>%v</td><td>按值的本来值输出</td></tr><tr><td>%+v</td><td>在%v基础上，对结构体字段名和值进行展开</td></tr><tr><td>%#v</td><td>输出GO语言语法格式的值</td></tr><tr><td>%T</td><td>输出Go语言语法格式的类型和值</td></tr><tr><td>%%</td><td>输出%本体</td></tr><tr><td>%b</td><td>整型以二进制方式显示</td></tr><tr><td>%o</td><td>整型以八进制方式显示</td></tr><tr><td>%d</td><td>整型以十进制方式显示</td></tr><tr><td>%x</td><td>整型以十六进制方式显示</td></tr><tr><td>%X</td><td>整型以十六进制、字母大写方式显示</td></tr><tr><td>%U</td><td>Unicode字符</td></tr><tr><td>%f</td><td>浮点数</td></tr><tr><td>%p</td><td>指针，十六进制方式显示</td></tr></tbody></table><blockquote><p>常量</p></blockquote><ul><li>枚举<br>用常量配合iota实现枚举<br>iota:常量计数器，常量中每新增一行iota将计数一次</li></ul><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> ItemType <span class="keyword">int</span></span><br><span class="line">  </span><br><span class="line"><span class="keyword">const</span> (</span><br><span class="line">    Weapon ItemType = <span class="literal">iota</span></span><br><span class="line">    Consumables</span><br><span class="line">    Material</span><br><span class="line">    SkillBook</span><br><span class="line">)</span><br><span class="line">  </span><br><span class="line"><span class="keyword">var</span> Itemtype itemType = Weapon</span><br></pre></td></tr></table></figure><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> (</span><br><span class="line">    FlagNone = <span class="number">1</span> &lt;&lt; <span class="literal">iota</span></span><br><span class="line">    FlagRed</span><br><span class="line">    FlagGreen</span><br><span class="line">    FlagBlue</span><br><span class="line">)</span><br></pre></td></tr></table></figure><ul><li>枚举值转字符串</li></ul><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(item ItemType)</span> <span class="title">String</span><span class="params">()</span> <span class="title">string</span></span>&#123;</span><br><span class="line">    <span class="keyword">switch</span> item &#123;</span><br><span class="line">        <span class="keyword">case</span> Weapon:</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;武器&quot;</span></span><br><span class="line">        <span class="keyword">case</span> Consumables:</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;消耗品&quot;</span></span><br><span class="line">        <span class="keyword">case</span> Material:</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;材料&quot;</span></span><br><span class="line">        <span class="keyword">case</span> SkillBook:</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;技能书&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;N/A&quot;</span></span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line">name := itemType.String()</span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+      <categories>
+          
+          <category> 游戏 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Go </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>FirstBlogs</title>
+      <link href="/2021/05/16/FirstBlogs/"/>
+      <url>/2021/05/16/FirstBlogs/</url>
+      
+        <content type="html"><![CDATA[<p>这是我的第一篇博客</p><p>这是一个测试</p>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> Unity </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+  
+  
+</search>
