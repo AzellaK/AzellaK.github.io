@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+
+
+<html lang="ch">
+  
+
+    <head>
+      <meta charset="utf-8" />
+        
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1"
+      />
+      <title>Go语言学习笔记6-接口 |  Azella</title>
+  <meta name="generator" content="hexo-theme-ayer">
+      
+      <link rel="shortcut icon" href="/images/head.png" />
+       
+<link rel="stylesheet" href="/dist/main.css">
+
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css"
+      />
+      
+<link rel="stylesheet" href="/css/custom.css">
+ 
+      <script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+       
+ 
+
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bulma@5.0.1/bulma.min.css"
+      />
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
+
+      <!-- mermaid -->
+      
+      <style>
+        .swal2-styled.swal2-confirm {
+          font-size: 1.6rem;
+        }
+      </style>
+    </head>
+  </html>
+</html>
+
+
+<body>
+  <div id="app">
+    
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-Go语言学习笔记6-接口"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  Go语言学习笔记6-接口
+</h1>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2021/12/02/Go%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B06-%E6%8E%A5%E5%8F%A3/" class="article-date">
+  <time datetime="2021-12-02T14:46:20.000Z" itemprop="datePublished">2021-12-02</time>
+</a>   
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> Word count:</span>
+            <span class="post-count">1.7k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> Reading time≈</span>
+            <span class="post-count">8 min</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h2 id="接口">接口</h2>
+<p>接口本事是调用方和是实现方均需要遵守的一种协议，大家按照统一的方法命名参数类型和数量来协调逻辑处理的过程<br>
+实现接口需遵循的条件：</p>
+<ul>
+<li>接口的方法与实现接口的类型方法格式必须一致</li>
+<li>接口中的所有方法均要被实现</li>
+</ul>
+<blockquote>
+<p>type 接口类型名 interface {<br>
+方法名1(参数列表1) 返回值列表1<br>
+方法名2(参数列表2) 返回值列表2<br>
+}</p>
+</blockquote>
+<ol>
+<li>一个类型可以实现多个接口，接口间彼此独立</li>
+<li>多个类型可以实现相同的接口，接口的方法可以通过在类型中嵌入其他类型或者结构体来实现</li>
+</ol>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line">  </span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;fmt&quot;</span></span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> s Service = <span class="built_in">new</span>(GameService)</span><br><span class="line">	s.Start()</span><br><span class="line">	s.Log(<span class="string">&quot;日志&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="comment">//定义接口</span></span><br><span class="line"><span class="keyword">type</span> Service <span class="keyword">interface</span> &#123;</span><br><span class="line">	Start()</span><br><span class="line">	Log(<span class="keyword">string</span>)</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="keyword">type</span> logger <span class="keyword">struct</span> &#123;</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="comment">//内嵌结构体实现接口Log</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(g logger)</span> <span class="title">Log</span><span class="params">(l <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">	fmt.Println(l)</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="keyword">type</span> GameService <span class="keyword">struct</span> &#123;</span><br><span class="line">	logger</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="comment">//实现接口Start</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(g GameService)</span> <span class="title">Start</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">&quot;start&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line">  </span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>接口与接口间可以通过嵌套创造出新的接口</li>
+<li>使用接口断言将接口转换成另外一个接口，也可以将接口转换成另外的类型<br>
+<code>t := i.(T)</code>
+<ul>
+<li>i：接口变量</li>
+<li>T：转换的目标类型</li>
+<li>t：转换后的变量</li>
+</ul>
+</li>
+</ol>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line">  </span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;fmt&quot;</span></span><br><span class="line">  </span><br><span class="line"><span class="keyword">type</span> Flyer <span class="keyword">interface</span> &#123;</span><br><span class="line">	Fly()</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="keyword">type</span> Walker <span class="keyword">interface</span> &#123;</span><br><span class="line">	Walk()</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="keyword">type</span> Bird <span class="keyword">struct</span> &#123;</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="keyword">type</span> Pig <span class="keyword">struct</span> &#123;</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(p *Pig)</span> <span class="title">Walk</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">&quot;walk&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Bird)</span> <span class="title">Walk</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">&quot;bird:walk&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Bird)</span> <span class="title">Fly</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">&quot;bird:flyer&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	animals := <span class="keyword">map</span>[<span class="keyword">string</span>] <span class="keyword">interface</span>&#123;&#125;&#123;</span><br><span class="line">		<span class="string">&quot;bird&quot;</span>: <span class="built_in">new</span>(Bird),</span><br><span class="line">		<span class="string">&quot;pig&quot;</span>: <span class="built_in">new</span>(Pig),</span><br><span class="line">	&#125;</span><br><span class="line">  </span><br><span class="line">	<span class="keyword">for</span> name, obj := <span class="keyword">range</span> animals &#123;</span><br><span class="line">		f, isFlyer := obj.(Flyer)</span><br><span class="line">		w, isWalker := obj.(Walker)</span><br><span class="line">  </span><br><span class="line">		fmt.Printf(<span class="string">&quot;name:%s, isFlyaer:%v, isWalker:%v\n&quot;</span>, name, isFlyer, isWalker)</span><br><span class="line">  </span><br><span class="line">		<span class="keyword">if</span> isFlyer &#123;</span><br><span class="line">			f.Fly()</span><br><span class="line">		&#125;</span><br><span class="line">  </span><br><span class="line">		<span class="keyword">if</span> isWalker &#123;</span><br><span class="line">			w.Walk()</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="5">
+<li>空接口是接口类型的特殊形式，空接口没有任何方法，因此任何类型都无须实现接口。因此空接口类型可以保存任何值，类型C#中的Object</li>
+</ol>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line">  </span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;fmt&quot;</span></span><br><span class="line">  </span><br><span class="line"><span class="comment">//使用空接口实现可以保存任何值的字典</span></span><br><span class="line"><span class="keyword">type</span> Dictionary <span class="keyword">struct</span> &#123;</span><br><span class="line">	data <span class="keyword">map</span>[<span class="keyword">interface</span>&#123;&#125;] <span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(d *Dictionary)</span> <span class="title">Get</span><span class="params">(key <span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">interface</span></span>&#123;&#125; &#123;</span><br><span class="line">	<span class="keyword">return</span> d.data[key]</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(d *Dictionary)</span> <span class="title">Set</span><span class="params">(key <span class="keyword">interface</span>&#123;&#125;, value <span class="keyword">interface</span>&#123;&#125;)</span></span> &#123;</span><br><span class="line">	d.data[key] = value</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(d *Dictionary)</span> <span class="title">Visit</span><span class="params">(callback <span class="keyword">func</span>(k, v <span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">bool</span>)</span> &#123;</span><br><span class="line">	<span class="keyword">if</span> callback == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line">  </span><br><span class="line">	<span class="keyword">for</span> k, v := <span class="keyword">range</span> d.data &#123;</span><br><span class="line">		<span class="keyword">if</span> !callback(k, v) &#123;</span><br><span class="line">			<span class="keyword">return</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(d *Dictionary)</span> <span class="title">Clear</span><span class="params">()</span></span> &#123;</span><br><span class="line">	d.data = <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">interface</span>&#123;&#125;] <span class="keyword">interface</span>&#123;&#125;)</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewDictionary</span><span class="params">()</span> *<span class="title">Dictionary</span></span> &#123;</span><br><span class="line">	d := &amp;Dictionary&#123;&#125;</span><br><span class="line">  </span><br><span class="line">	d.Clear()</span><br><span class="line">	<span class="keyword">return</span> d</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	dict := NewDictionary()</span><br><span class="line">  </span><br><span class="line">	dict.Set(<span class="string">&quot;My Factory&quot;</span>, <span class="number">60</span>)</span><br><span class="line">	dict.Set(<span class="string">&quot;Terra Craft&quot;</span>, <span class="number">36</span>)</span><br><span class="line">	dict.Set(<span class="string">&quot;Don&#x27;t Hungry&quot;</span>, <span class="number">24</span>)</span><br><span class="line">  </span><br><span class="line">	favorite := dict.Get(<span class="string">&quot;Terra Craft&quot;</span>)</span><br><span class="line">	fmt.Println(favorite)</span><br><span class="line">  </span><br><span class="line">	dict.Visit(<span class="function"><span class="keyword">func</span><span class="params">(k, v <span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">		<span class="keyword">if</span> v.(<span class="keyword">int</span>) &gt; <span class="number">40</span> &#123;</span><br><span class="line">			fmt.Println(k, <span class="string">&quot;is expensive&quot;</span>)</span><br><span class="line">			<span class="keyword">return</span>  <span class="literal">true</span></span><br><span class="line">		&#125;</span><br><span class="line">  </span><br><span class="line">		fmt.Println(k, <span class="string">&quot;is cheap&quot;</span>)</span><br><span class="line">		<span class="keyword">return</span>  <span class="literal">true</span></span><br><span class="line">	&#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="6">
+<li>使用<code>switch</code>可以判断一个接口内保存或实现的类型</li>
+</ol>
+<blockquote>
+<p>switch 接口变量.(type) {<br>
+case 类型1:<br>
+//变量是类型1时的处理<br>
+case 类型2:<br>
+//变量是类型2时的处理<br>
+default:<br>
+//变量不是所有case中列举的类型时的处理<br>
+}</p>
+</blockquote>
+<ol start="7">
+<li>实现有限状态机</li>
+</ol>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line">  </span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;errors&quot;</span></span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;reflect&quot;</span></span><br><span class="line">)</span><br><span class="line">  </span><br><span class="line"><span class="comment">//状态接口</span></span><br><span class="line"><span class="keyword">type</span> State <span class="keyword">interface</span> &#123;</span><br><span class="line">	Name() <span class="keyword">string</span></span><br><span class="line">	EnableSameTransit() <span class="keyword">bool</span></span><br><span class="line">	OnBegin()</span><br><span class="line">	OnEnd()</span><br><span class="line">	CanTransitTo(name <span class="keyword">string</span>) <span class="keyword">bool</span></span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="comment">//从状态实例获取状态名</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">StateName</span><span class="params">(s State)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> s == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="string">&quot;none&quot;</span></span><br><span class="line">	&#125;</span><br><span class="line">  </span><br><span class="line">	<span class="keyword">return</span> reflect.TypeOf(s).Elem().Name()</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="comment">//状态的基础信息和默认实现</span></span><br><span class="line"><span class="keyword">type</span> StateInfo <span class="keyword">struct</span> &#123;</span><br><span class="line">	name <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="comment">//状态名</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *StateInfo)</span> <span class="title">Name</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> s.name</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="comment">//提供给内部设置名字</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *StateInfo)</span> <span class="title">setName</span><span class="params">(name <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">	s.name = name</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="comment">//允许同状态转移</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *StateInfo)</span> <span class="title">EnableSameTransit</span><span class="params">()</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span>  <span class="literal">false</span></span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="comment">//默认将状态开启时实现</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *StateInfo)</span> <span class="title">OnBegin</span><span class="params">()</span></span> &#123;</span><br><span class="line">  </span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="comment">//默认将状态结束时实现</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *StateInfo)</span> <span class="title">OnEnd</span><span class="params">()</span></span> &#123;</span><br><span class="line">  </span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="comment">//默认可以转移到任何状态</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *StateInfo)</span> <span class="title">CanTransitTo</span><span class="params">(name <span class="keyword">string</span>)</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="comment">//状态管理器</span></span><br><span class="line"><span class="keyword">type</span> StateManager <span class="keyword">struct</span> &#123;</span><br><span class="line">	stateByName	<span class="keyword">map</span>[<span class="keyword">string</span>]State	<span class="comment">//已添加的状态</span></span><br><span class="line">	onChange <span class="function"><span class="keyword">func</span><span class="params">(from, to State)</span>	//状态改变时的回调</span></span><br><span class="line">	cur State						<span class="comment">//当前状态</span></span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="comment">//根据名字获取指定状态</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(sm *StateManager)</span> <span class="title">Get</span><span class="params">(name <span class="keyword">string</span>)</span> <span class="title">State</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> v, ok := sm.stateByName[name]; ok &#123;</span><br><span class="line">		<span class="keyword">return</span> v</span><br><span class="line">	&#125;</span><br><span class="line">  </span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="comment">//添加一个状态到管理器中</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(sm *StateManager)</span> <span class="title">Add</span><span class="params">(s State)</span></span> &#123;</span><br><span class="line">	name := StateName(s)</span><br><span class="line">  </span><br><span class="line">	<span class="comment">//将s装换为能设置名字的接口，然后调用该接口</span></span><br><span class="line">	s.(<span class="keyword">interface</span>&#123;</span><br><span class="line">		setName(name <span class="keyword">string</span>)</span><br><span class="line">	&#125;).setName(name)</span><br><span class="line">  </span><br><span class="line">	<span class="comment">//根据状态名获取已经添加的状态，检查改状态是否存在</span></span><br><span class="line">	<span class="keyword">if</span> sm.Get(name) != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="built_in">panic</span>(<span class="string">&quot;duplicate state:&quot;</span> + name)</span><br><span class="line">	&#125;</span><br><span class="line">  </span><br><span class="line">	<span class="comment">//根据名字保存到map中</span></span><br><span class="line">	sm.stateByName[name] = s</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="comment">//初始化状态管理器</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewStateManager</span><span class="params">()</span> *<span class="title">StateManager</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> &amp;StateManager&#123;</span><br><span class="line">		stateByName: <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">string</span>]State),</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="comment">//定义错误</span></span><br><span class="line"><span class="keyword">var</span> ErrStateNotFound = errors.New(<span class="string">&quot;state not found&quot;</span>)</span><br><span class="line"><span class="keyword">var</span> ErrForbidSameStateTransit = errors.New(<span class="string">&quot;forbid same state transit&quot;</span>)</span><br><span class="line"><span class="keyword">var</span> ErrCannotTransitToState = errors.New(<span class="string">&quot;cannot transit to state&quot;</span>)</span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(sm *StateManager)</span> <span class="title">CurrState</span><span class="params">()</span> <span class="title">State</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> sm.cur</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(sm *StateManager)</span> <span class="title">CanCurrTransitTo</span><span class="params">(name <span class="keyword">string</span>)</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> sm.cur == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">	&#125;</span><br><span class="line">  </span><br><span class="line">	<span class="keyword">if</span> sm.cur.Name() == name &amp;&amp; !sm.cur.EnableSameTransit() &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">	&#125;</span><br><span class="line">  </span><br><span class="line">	<span class="keyword">return</span> sm.cur.CanTransitTo(name)</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="comment">//转移到指定状态</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(sm *StateManager)</span> <span class="title">Transit</span><span class="params">(name <span class="keyword">string</span>)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">	<span class="comment">//获取目标</span></span><br><span class="line">	next := sm.Get(name)</span><br><span class="line">  </span><br><span class="line">	<span class="comment">//目标不存在</span></span><br><span class="line">	<span class="keyword">if</span> next == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> ErrStateNotFound</span><br><span class="line">	&#125;</span><br><span class="line">  </span><br><span class="line">	<span class="comment">//记录转移前的状态</span></span><br><span class="line">	pre := sm.cur</span><br><span class="line">  </span><br><span class="line">	<span class="comment">//当前有状态</span></span><br><span class="line">	<span class="keyword">if</span> sm.cur != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="comment">//相同的状态不用转换</span></span><br><span class="line">		<span class="keyword">if</span> sm.cur.Name() == name &amp;&amp; !sm.cur.EnableSameTransit() &#123;</span><br><span class="line">			<span class="keyword">return</span> ErrForbidSameStateTransit</span><br><span class="line">		&#125;</span><br><span class="line">  </span><br><span class="line">		<span class="comment">//不能转移到目标状态</span></span><br><span class="line">		<span class="keyword">if</span> !sm.cur.CanTransitTo(name) &#123;</span><br><span class="line">			<span class="keyword">return</span> ErrCannotTransitToState</span><br><span class="line">		&#125;</span><br><span class="line">  </span><br><span class="line">		<span class="comment">//结束当前状态</span></span><br><span class="line">		sm.cur.OnEnd()</span><br><span class="line">	&#125;</span><br><span class="line">  </span><br><span class="line">	<span class="comment">//将当前状态切换为要转移到的目标状态</span></span><br><span class="line">	sm.cur = next</span><br><span class="line">	<span class="comment">//调用新状态的开始</span></span><br><span class="line">	sm.cur.OnBegin()</span><br><span class="line">  </span><br><span class="line">	<span class="comment">//通知回调</span></span><br><span class="line">	<span class="keyword">if</span> sm.onChange != <span class="literal">nil</span> &#123;</span><br><span class="line">		sm.onChange(pre, sm.cur)</span><br><span class="line">	&#125;</span><br><span class="line">  </span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="comment">//闲置状态</span></span><br><span class="line"><span class="keyword">type</span> IdleState <span class="keyword">struct</span> &#123;</span><br><span class="line">	StateInfo</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(i *IdleState)</span> <span class="title">OnBegin</span><span class="params">()</span></span>  &#123;</span><br><span class="line">	fmt.Println(<span class="string">&quot;idleState begin&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(i *IdleState)</span> <span class="title">OnEnd</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">&quot;idleState end&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="comment">//移动状态</span></span><br><span class="line"><span class="keyword">type</span> MoveState <span class="keyword">struct</span> &#123;</span><br><span class="line">	StateInfo</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *MoveState)</span> <span class="title">OnBegin</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">&quot;moveState begin&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *MoveState)</span> <span class="title">OnEnd</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">&quot;moveState end&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *MoveState)</span> <span class="title">EnableSameTransit</span><span class="params">()</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span>  <span class="literal">true</span></span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="comment">//跳跃状态</span></span><br><span class="line"><span class="keyword">type</span> JumpState <span class="keyword">struct</span> &#123;</span><br><span class="line">	StateInfo</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(j *JumpState)</span> <span class="title">OnBegin</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">&quot;jumpState begin&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(j *JumpState)</span> <span class="title">CanTransitTo</span><span class="params">(name <span class="keyword">string</span>)</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> name != <span class="string">&quot;MoveState&quot;</span></span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	sm := NewStateManager()</span><br><span class="line">  </span><br><span class="line">	<span class="comment">//响应状态转移的通知</span></span><br><span class="line">	sm.onChange = <span class="function"><span class="keyword">func</span><span class="params">(from, to State)</span></span> &#123;</span><br><span class="line">		fmt.Printf(<span class="string">&quot;%s--&gt; %s\n\n&quot;</span>, StateName(from), StateName(to))</span><br><span class="line">	&#125;</span><br><span class="line">  </span><br><span class="line">	<span class="comment">//添加3个状态</span></span><br><span class="line">	sm.Add(<span class="built_in">new</span>(IdleState))</span><br><span class="line">	sm.Add(<span class="built_in">new</span>(MoveState))</span><br><span class="line">	sm.Add(<span class="built_in">new</span>(JumpState))</span><br><span class="line">  </span><br><span class="line">	<span class="comment">//在不同状态间转移</span></span><br><span class="line">	transitAndReport(sm, <span class="string">&quot;IdleState&quot;</span>)</span><br><span class="line">	transitAndReport(sm, <span class="string">&quot;MoveState&quot;</span>)</span><br><span class="line">	transitAndReport(sm, <span class="string">&quot;MoveState&quot;</span>)</span><br><span class="line">	transitAndReport(sm, <span class="string">&quot;JumpState&quot;</span>)</span><br><span class="line">	transitAndReport(sm, <span class="string">&quot;JumpState&quot;</span>)</span><br><span class="line">	transitAndReport(sm, <span class="string">&quot;IdleState&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="comment">//封装转移状态和输出日志</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">transitAndReport</span><span class="params">(sm *StateManager, target <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> err := sm.Transit(target); err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Printf(<span class="string">&quot;Failed! %s--&gt;%s, %s\n\n&quot;</span>, sm.CurrState().Name(), target, err.Error())</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line">  </span><br></pre></td></tr></table></figure>
+ 
+      <!-- reward -->
+      
+      <div id="reword-out">
+        <div id="reward-btn">
+          Donate
+        </div>
+      </div>
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>Copyright： </strong>
+          
+          Copyright is owned by the author. For commercial reprints, please contact the author for authorization. For non-commercial reprints, please indicate the source.
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://yangyinlin.top/2021/12/02/Go%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B06-%E6%8E%A5%E5%8F%A3/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Go/" rel="tag">Go</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+    
+      <a href="/2021/11/26/Go%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B05-%E7%BB%93%E6%9E%84%E4%BD%93/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">Go语言学习笔记5-结构体</div>
+      </a>
+    
+  </nav>
+
+   
+<!-- valine评论 -->
+<div id="vcomments-box">
+  <div id="vcomments"></div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+<script>
+  new Valine({
+    el: "#vcomments",
+    app_id: "hanBhsYX9x92swlWOmhmx8Mk-gzGzoHsz",
+    app_key: "HFajSMzgHbHz3jYfNSGQdDtQ",
+    path: window.location.pathname,
+    avatar: "retro",
+    placeholder: "给我的文章加点评论吧~",
+    recordIP: true,
+  });
+  const infoEle = document.querySelector("#vcomments .info");
+  if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+    infoEle.childNodes.forEach(function (item) {
+      item.parentNode.removeChild(item);
+    });
+  }
+</script>
+<style>
+  #vcomments-box {
+    padding: 5px 30px;
+  }
+
+  @media screen and (max-width: 800px) {
+    #vcomments-box {
+      padding: 5px 0px;
+    }
+  }
+
+  #vcomments-box #vcomments {
+    background-color: #fff;
+  }
+
+  .v .vlist .vcard .vh {
+    padding-right: 20px;
+  }
+
+  .v .vlist .vcard {
+    padding-left: 10px;
+  }
+</style>
+
+ 
+   
+     
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2021
+        <i class="ri-heart-fill heart_icon"></i> Azella
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>Visitors:<span id="busuanzi_value_site_uv"></span></span>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>Views:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://v1.cnzz.com/z_stat.php?id=1280580188&amp;web_id=1280580188'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>    
+    </main>
+    <div class="float_btns">
+      <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+    </div>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/head.png" alt="Azella"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.png">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.png">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-3.6.0.min.js"></script>
+ 
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+ 
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: ".tocbot",
+    contentSelector: ".article-entry",
+    headingSelector: "h1, h2, h3, h4, h5, h6",
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: "main",
+    positionFixedSelector: ".tocbot",
+    positionFixedClass: "is-position-fixed",
+    fixedSidebarOffset: "auto",
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css"
+/>
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+ <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script> 
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+ 
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+ 
+<!-- ClickLove -->
+ 
+<script src="/js/clickLove.js"></script>
+ 
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+ 
+<link rel="stylesheet" href="/css/clipboard.css">
+ <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+ 
+<!-- CanvasBackground -->
+ 
+<script src="/js/dz.js"></script>
+ 
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({ theme: "forest" });
+  }
+</script>
+
+
+    
+    <div id="music">
+    
+    
+    
+    <iframe frameborder="no" border="1" marginwidth="0" marginheight="0" width="200" height="86"
+        src="//music.163.com/outchain/player?type=2&id=1460104607&auto=1&height=66"></iframe>
+</div>
+
+<style>
+    #music {
+        position: fixed;
+        right: 15px;
+        bottom: 0;
+        z-index: 998;
+    }
+</style>
+    
+    
+
+  </div>
+</body>
+
+</html>
